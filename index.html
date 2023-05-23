@@ -1,46 +1,68 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>HTML Example</title>
-  
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/about.css">
+    <title>등굣길 안전 시설 지도</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
-  <section class="center">
-    <aside class="sidebar"></aside>
-    
-    <section class="contents">
-      <!-- page will be include here -->
-      <section id="page" class="page">
-        <section id="about">
-          <section class="frame">
-            <h2><b>HELLO</b>WORLD</h2>
-            
-            <div class="cat">
-              <div class="picture">
-                <img src="images/mew.png" alt="Mew">
-              </div>
-              <small>Mew</small>
-            </div>
-            <div class="cat">
-              <div class="picture">
-                <img src="images/siesta.png" alt="Siesta">
-              </div>
-              <small>Siesta</small>
-            </div>
-            <div class="cat">
-              <div class="picture">
-                <img src="images/tiger.png" alt="Tiger">
-              </div>
-              <small>Tiger</small>
-            </div>
-          </section>
-        </section>
-      </section>
-    </section>
-  </section>
-</body>
-</html>
+    <div id="map"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        function getGeocode(address) {
+            var url = 'https://dapi.kakao.com/v2/local/search/address.json?query=' + address;
+            var headers = { 'Authorization': 'b453cee1a5b22e8a6b83eee792da87ed' };
+
+            return fetch(url, { headers: headers })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var documents = data.documents;
+                    if (documents.length > 0) {
+                        var lat = parseFloat(documents[0].y);
+                        var lng = parseFloat(documents[0].x);
+                        return [lat, lng];
+                    }
+                    return null;
+                });
+        }
+
+        function addMarkers(map, locations, icon) {
+            locations.forEach(function(location) {
+                getGeocode(location)
+                    .then(function(coordinates) {
+                        if (coordinates) {
+                            L.marker(coordinates, { icon: icon }).addTo(map);
+                        }
+                    });
+            });
+        }
+
+        function initMap() {
+            // 사용자로부터 등굣길 입력 받기
+            var path = prompt("등굣길을 입력하세요: ");
+
+            // 지도 객체 생성
+            var map = L.map('map').setView([0, 0], 15);
+
+            // 지도 타일 레이어
+            var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // 안전 시설 위치
+            var trafficLights = ['서울특별시 강남구 신사동', '서울특별시 강남구 청담동'];
+            var speedBumps = ['서울특별시 강남구 도곡동', '서울특별시 강남구 개포동'];
+            var schoolZones = ['서울특별시 강남구 역삼동', '서울특별시 강남구 논현동'];
+            var cctv = ['서울특별시 강남구 대치동', '서울특별시 강남구 삼성동'];
+
+            // 안전 시설 표시
+            var redIcon = L
