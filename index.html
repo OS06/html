@@ -1,109 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>등굣길 안전 시설 지도</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
-    <style>
-        #map {
-            height: 100vh;
-        }
-    </style>
+	<meta charset="utf-8">
+	<title>성일고 안전지킴이</title>
 </head>
 <body>
-    <div id="map"></div>
+	<div id="map" style="width:750px;height:350px;"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script>
-        function getGeocode(address) {
-            var url = 'https://dapi.kakao.com/v2/local/search/address.json?query=' + address;
-            var headers = { 'Authorization': 'b453cee1a5b22e8a6b83eee792da87ed' };
+	<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=b453cee1a5b22e8a6b83eee792da87ed"></script>
+	<script>
+		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+		    mapOption = {
+		        center: new kakao.maps.LatLng(37.4349, 127.1461), // 지도의 중심좌표
+		        level: 4, // 지도의 확대 레벨
+		        mapTypeId : kakao.maps.MapTypeId.ROADMAP // 지도종류
+		    }; 
 
-            return fetch(url, { headers: headers })
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    var documents = data.documents;
-                    if (documents.length > 0) {
-                        var lat = parseFloat(documents[0].y);
-                        var lng = parseFloat(documents[0].x);
-                        return [lat, lng];
-                    }
-                    return null;
-                });
-        }
+		// 지도를 생성한다 
+		var map = new kakao.maps.Map(mapContainer, mapOption); 
 
-        function addMarkers(map, locations, icon) {
-            locations.forEach(function(location) {
-                getGeocode(location)
-                    .then(function(coordinates) {
-                        if (coordinates) {
-                            L.marker(coordinates, { icon: icon }).addTo(map);
-                        }
-                    });
-            });
-        }
+		// 지도에 확대 축소 컨트롤을 생성한다
+		var zoomControl = new kakao.maps.ZoomControl();
 
-        function initMap() {
-            // 사용자로부터 등굣길 입력 받기
-            var path = prompt("등굣길을 입력하세요: ");
+		// 지도의 우측에 확대 축소 컨트롤을 추가한다
+		map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
 
-            // 지도 객체 생성
-            var map = L.map('map').setView([0, 0], 15);
-
-            // 지도 타일 레이어
-            var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // 안전 시설 위치
-            var trafficLights = ['서울특별시 강남구 신사동', '서울특별시 강남구 청담동'];
-            var speedBumps = ['서울특별시 강남구 도곡동', '서울특별시 강남구 개포동'];
-            var schoolZones = ['서울특별시 강남구 역삼동', '서울특별시 강남구 논현동'];
-            var cctv = ['서울특별시 강남구 대치동', '서울특별시 강남구 삼성동'];
-
-            // 안전 시설 표시
-            var redIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            var blueIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            var greenIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            var purpleIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-
-            addMarkers(map, trafficLights, redIcon);
-            addMarkers(map, speedBumps, blueIcon);
-            addMarkers(map, schoolZones, greenIcon);
-            addMarkers(map, cctv, purpleIcon);
-        }
-
-        // 초기화
-        window.onload = function() {
-            initMap();
-        };
-    </script>
+	</script>
 </body>
 </html>
