@@ -284,6 +284,49 @@ var circle20 = new kakao.maps.Circle({
 		    image : markerImage, // 마커의 이미지
 		    map: map // 마커를 표시할 지도 객체
 		});
+		
+        // ...
+
+        // 이 부분에서 출발 좌표와 도착 좌표를 설정합니다.
+        var startLatLng = new kakao.maps.LatLng(출발 위도, 출발 경도);
+        var endLatLng = new kakao.maps.LatLng(도착 위도, 도착 경도);
+
+        // 길찾기 서비스를 생성합니다
+        var service = new kakao.maps.services.Places();
+
+        // 길찾기 요청을 생성합니다
+        service.route({
+            origin: startLatLng,
+            destination: endLatLng,
+            travelMode: kakao.maps.services.TravelMode.WALKING, // 도보 경로로 설정합니다.
+        }, function (result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                // 경로를 표시할 선을 생성합니다.
+                var polyline = new kakao.maps.Polyline({
+                    path: result.routes[0].sectionPoints,
+                    strokeWeight: 4,
+                    strokeColor: '#FF6A00',
+                    strokeOpacity: 0.7,
+                    strokeStyle: 'solid',
+                });
+
+                // 지도에 선을 표시합니다.
+                polyline.setMap(map);
+
+                // 출발과 도착 마커를 생성합니다.
+                var startMarker = new kakao.maps.Marker({
+                    position: startLatLng,
+                    image: new kakao.maps.MarkerImage('출발 마커 이미지 URL', new kakao.maps.Size(32, 32)),
+                });
+
+                var endMarker = new kakao.maps.Marker({
+                    position: endLatLng,
+                    image: new kakao.maps.MarkerImage('도착 마커 이미지 URL', new kakao.maps.Size(32, 32)),
+                });
+
+                // 출발과 도착 마커를 지도에 표시합니다.
+                startMarker.setMap(map);
+                endMarker.setMap(map);
 
 	</script>
 </body>
