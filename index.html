@@ -284,6 +284,39 @@ var circle20 = new kakao.maps.Circle({
 		    image : markerImage, // 마커의 이미지
 		    map: map // 마커를 표시할 지도 객체
 		});
+		// 길찾기 함수
+        function findRoute() {
+            var startCoord = document.getElementById('start').value;
+            var endCoord = document.getElementById('end').value;
+
+            // 출발지와 도착지 좌표를 문자열에서 추출
+            var startLatLng = new kakao.maps.LatLng(startCoord.split(',')[0], startCoord.split(',')[1]);
+            var endLatLng = new kakao.maps.LatLng(endCoord.split(',')[0], endCoord.split(',')[1]);
+
+            // 길찾기 서비스 객체를 생성
+            var ps = new kakao.maps.services.Places();
+
+            // 길찾기 요청 객체 생성
+            var routeSearchRequest = {
+                origin: startLatLng,
+                destination: endLatLng,
+                travelMode: kakao.maps.services.TravelMode.TRANSIT
+            };
+
+            // 길찾기 요청
+            ps.route(routeSearchRequest, function (result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    var path = result.routes[0].path;
+                    var polyline = new kakao.maps.Polyline({
+                        path: path,
+                        strokeWeight: 4,
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.7,
+                        strokeStyle: 'solid'
+                    });
+                    polyline.setMap(map);
+                }
+
 	</script>
 </body>
 </html>
