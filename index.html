@@ -15,12 +15,12 @@
 	</div>
 	<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=b453cee1a5b22e8a6b83eee792da87ed"></script>
 	<script>
-		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-		    mapOption = {
+		// 지도 생성
+	var map = new kakao.maps.Map(document.getElementById('map'), {
 		        center: new kakao.maps.LatLng(37.4349,127.1461), // 지도의 중심좌표
 		        level: 3, // 지도의 확대 레벨
 		        mapTypeId : kakao.maps.MapTypeId.ROADMAP // 지도종류
-		    }; 
+		    }); 
 
 		// 지도를 생성한다 
 		var map = new kakao.maps.Map(mapContainer, mapOption); 
@@ -295,9 +295,10 @@ var circle20 = new kakao.maps.Circle({
             var startCoord = document.getElementById('start').value;
             var endCoord = document.getElementById('end').value;
 
-            // 출발지와 도착지 좌표를 문자열에서 추출
-            var startLatLng = new kakao.maps.LatLng(startCoord.split(',')[0], startCoord.split(',')[1]);
-            var endLatLng = new kakao.maps.LatLng(endCoord.split(',')[0], endCoord.split(',')[1]);
+		// 출발지와 도착지 좌표를 좌표로 변환
+            startCoord = parseCoord(startCoord);
+            endCoord = parseCoord(endCoord);
+
 
             // 길찾기 서비스 객체를 생성
             var ps = new kakao.maps.services.Places();
